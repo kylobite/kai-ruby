@@ -29,9 +29,12 @@ class Think
 				return known_phrases[use.index(use.max)].capitalize
 			# Do if KAI is clueless at the moment
 			else
+				# Last Resort
+
 				# Consult thesaurus
 				# Look for similiar words
 				# If all fails: Store string in curiosity and random
+				
 				return known_phrases[Random.new.rand(known_phrases.size)].capitalize
 			end
 		end

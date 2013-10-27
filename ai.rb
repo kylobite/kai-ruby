@@ -7,13 +7,6 @@ Purpose:    KAI Bootstrap
 
 =end
 
-# TODO
-#
-# respond
-# clean up
-# make keyphrases
-# order: T->Q|S|C
-
 #~&\\\\mode:.+
 
 require "./memory"
