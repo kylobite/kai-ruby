@@ -12,6 +12,24 @@ class Think
 		@string = string
 	end
 
+	# Determine if mode was set
+	def mode_set()
+		phrase = @string.scan(/~&\\\\mode:.+/)
+		if phrase.nil? or phrase.empty?
+			return false
+		else
+			extract = @string.scan(/~&\\\\mode:(.+)/)[0][0]
+			modes = Array.new("learn", "interactive", "curiosity")
+			modes.each do |mode|
+				if extract == mode
+					return mode
+				else
+					return nil
+				end
+			end
+		end
+	end
+
 	# Reply to user input; Setting the memory database
 	def reply(memory)
 		known_phrases = File.open(memory).read.scan(/\[(.*)\]/).flatten
@@ -34,7 +52,7 @@ class Think
 				# Consult thesaurus
 				# Look for similiar words
 				# If all fails: Store string in curiosity and random
-				
+
 				return known_phrases[Random.new.rand(known_phrases.size)].capitalize
 			end
 		end
