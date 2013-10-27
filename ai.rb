@@ -19,7 +19,8 @@ Purpose:    KAI Bootstrap
 require "./memory"
 require "./think"
 
-memory 			= Memory.new
+mem 			= "brain.db"		
+memory 			= Memory.new(mem)
 conversation	= true
 prompt			= "> "
 
