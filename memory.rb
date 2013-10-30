@@ -19,6 +19,9 @@ class Memory
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(memories)
+        if not File.exist? memories
+            File.open(memories)
+        end
         @db = SQLite3::Database.new(memories)
         # All questions "?"
         @db.execute("CREATE TABLE IF NOT EXISTS question
@@ -50,7 +53,8 @@ class Memory
         # Possibly add reaction determination to `thesaurus`?
         )
 
-        File.open("checksum", "w") { |file| file.write(Digest::SHA2.file("brain.db").hexdigest) }
+        dir = File.expand_path File.dirname(__FILE__)
+        File.open("#{dir}/checksum", "w") { |file| file.write(Digest::SHA2.file(memories).hexdigest) }
 
         @tables = ["question", "statement", "command", "thesaurus"]
     end

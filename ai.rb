@@ -24,7 +24,7 @@ puts "---------------------------------------"
 puts
 
 # Grab the checksum of the memory database
-checksum = File.open("checksum") {|file| file.read}
+checksum = File.open(dir + "/checksum") {|file| file.read}
 
 while conversation
 	print prompt
