@@ -47,6 +47,7 @@ class Memory
                     input TEXT,
                     output TEXT,
                     increment INTEGER)"
+        # Possibly add reaction determination to `thesaurus`?
         )
 
         File.open("checksum", "w") { |file| file.write(Digest::SHA2.file("brain.db").hexdigest) }

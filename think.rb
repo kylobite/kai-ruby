@@ -31,8 +31,8 @@ class Think
 	end
 
 	# Reply to user input; Setting the memory database
-	def reply(memory)
-		known_phrases = File.open(memory).read.scan(/\[(.*)\]/).flatten
+	def reply(memories)
+		known_phrases = File.open(memories).read.scan(/\[(.*)\]/).flatten
 
 		# Default responses if memory database is empty/nonexistent
 		if known_phrases.nil? or known_phrases.empty?
