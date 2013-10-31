@@ -7,7 +7,7 @@ Purpose:    KAI Memories
 
 =end
 
-require 'sqlite3'
+require "sqlite3"
 require "digest"
 
 # Notes
@@ -20,7 +20,7 @@ class Memory
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(memories)
         if not File.exist? memories
-            File.open(memories)
+            File.open(memories, File::CREAT)
         end
         @db = SQLite3::Database.new(memories)
         # All questions "?"
@@ -28,7 +28,7 @@ class Memory
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER,
+                    scales TEXT,
                     uniqid TEXT)"
         )
         # All statements "."
@@ -36,7 +36,7 @@ class Memory
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER,
+                    scales TEXT,
                     uniqid TEXT)"
         )
         # All commands "!"
@@ -44,7 +44,7 @@ class Memory
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER,
+                    scales TEXT,
                     uniqid TEXT)"
         )
         # All word matchings "*"
@@ -52,7 +52,7 @@ class Memory
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER,
+                    scales TEXT,
                     uniqid TEXT)"
         # Possibly add reaction determination to `thesaurus`?
         )
@@ -64,16 +64,16 @@ class Memory
     end
     
     # Inject memories into the database
-    def inject(table, input, output)
-    	state = false
-        # Validate that table exists
-        @tables.each do |t|
-            if t == table
-                state = true
-            end
-        end
-        # Should not happen unless hackers happen
-        raise ArgumentError, "TABLE DOES NOT EXIST!!!" unless state
-        @db.execute("INSERT INTO #{table} (id, input, output) VALUES ( ?, ?, ?, ? )", [nil, input, output, 0])
-    end
+    # def inject(table, input, output)
+    # 	state = false
+    #     # Validate that table exists
+    #     @tables.each do |t|
+    #         if t == table
+    #             state = true
+    #         end
+    #     end
+    #     # Should not happen unless hackers happen
+    #     raise "Table does not exist @ Memory::inject" unless state
+    #     @db.execute("INSERT INTO #{table} (id, input, output) VALUES ( ?, ?, ?, ? )", [nil, input, output, 0])
+    # end
 end
