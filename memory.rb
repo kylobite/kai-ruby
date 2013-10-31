@@ -28,28 +28,32 @@ class Memory
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER)"
+                    increment INTEGER,
+                    uniqid TEXT)"
         )
         # All statements "."
         @db.execute("CREATE TABLE IF NOT EXISTS statement
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER)"
+                    increment INTEGER,
+                    uniqid TEXT)"
         )
         # All commands "!"
         @db.execute("CREATE TABLE IF NOT EXISTS command
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER)"
+                    increment INTEGER,
+                    uniqid TEXT)"
         )
         # All word matchings "*"
         @db.execute("CREATE TABLE IF NOT EXISTS thesaurus
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
-                    increment INTEGER)"
+                    increment INTEGER,
+                    uniqid TEXT)"
         # Possibly add reaction determination to `thesaurus`?
         )
 

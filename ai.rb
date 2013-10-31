@@ -11,9 +11,9 @@ require_relative "memory"
 require_relative "think"
 
 dir 			= File.expand_path File.dirname(__FILE__)
-source 			= "/brain.db"
-mem_src			= dir + source
-memory 			= Memory.new(mem_src)
+memories 		= "brain.db"
+mem_dir			= dir + "/" + memories
+memory 			= Memory.new(mem_dir)
 conversation	= true
 prompt			= "> "
 
@@ -51,6 +51,6 @@ while conversation
 				puts "I don't understand..."
 			end
 		end
-		# File.open("test", "a") {|file| file.write("[#{input.downcase}]\n")}
+		# File.open("test", "a") {|file| file.write "[#{input.downcase}]\n"}
 	end
 end
