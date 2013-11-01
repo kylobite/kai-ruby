@@ -15,7 +15,7 @@ require "digest"
 # DELETE FROM table| WHERE id=#
 
 class Memory
-    attr_reader :db, :id, :tables
+    attr_reader :db, :id
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(memories)
@@ -24,27 +24,12 @@ class Memory
         end
         @db = SQLite3::Database.new(memories)
         # All questions "?"
-        @db.execute("CREATE TABLE IF NOT EXISTS question
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    input TEXT,
-                    output TEXT,
-                    scales TEXT,
-                    uniqid TEXT)"
-        )
-        # All statements "."
         @db.execute("CREATE TABLE IF NOT EXISTS statement
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     input TEXT,
                     output TEXT,
                     scales TEXT,
-                    uniqid TEXT)"
-        )
-        # All commands "!"
-        @db.execute("CREATE TABLE IF NOT EXISTS command
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    input TEXT,
-                    output TEXT,
-                    scales TEXT,
+                    type TEXT,
                     uniqid TEXT)"
         )
         # All word matchings "*"
@@ -59,21 +44,5 @@ class Memory
 
         dir = File.expand_path File.dirname(__FILE__)
         File.open("#{dir}/checksum", "w") { |file| file.write(Digest::SHA2.file(memories).hexdigest) }
-
-        @tables = ["question", "statement", "command", "thesaurus"]
     end
-    
-    # Inject memories into the database
-    # def inject(table, input, output)
-    # 	state = false
-    #     # Validate that table exists
-    #     @tables.each do |t|
-    #         if t == table
-    #             state = true
-    #         end
-    #     end
-    #     # Should not happen unless hackers happen
-    #     raise "Table does not exist @ Memory::inject" unless state
-    #     @db.execute("INSERT INTO #{table} (id, input, output) VALUES ( ?, ?, ?, ? )", [nil, input, output, 0])
-    # end
 end

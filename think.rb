@@ -83,15 +83,9 @@ class Think
         end
 
         # Use punctuation to determine table
-        tables = {
-            "." => "statement",
-            "?" => "question",
-            "!" => "command"
-        }
-        table = tables[type]
 
         # Check for empty output
-        output = memory.db.execute("SELECT id FROM #{table} WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
+        output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
         id = (output.nil?) ? nil : output
 
         uniqid      = nil
@@ -100,11 +94,11 @@ class Think
         # Get uniqid
         if id.nil?
             # No empty outputs
-            unique      = memory.db.execute("SELECT uniqid FROM #{table} ORDER BY id DESC LIMIT 1")[0]
+            unique      = memory.db.execute("SELECT uniqid FROM statement ORDER BY id DESC LIMIT 1")[0]
             io_match    = (unique.nil?) ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
         else
             # Empty output!
-            unique      = memory.db.execute("SELECT uniqid FROM #{table} WHERE id=?",[id])[0]
+            unique      = memory.db.execute("SELECT uniqid FROM statement WHERE id=?",[id])[0]
             io_match    = unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i
         end
         io_matching     = "%x" % io_match
@@ -123,10 +117,11 @@ class Think
         io       = process.scan(/\|\s([xyXY]):\s.*/).flatten[0]
         remember = process.scan(/\|\s[xyXY]:\s(.*)/).flatten[0]
         if io == "x"
-            memory.db.execute("INSERT INTO #{table} (id,input,output,scales,uniqid) VALUES (?,?,?,?,?)",[nil,remember,'&','[0]',uniqid])
+            memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
+                               VALUES (?,?,?,?,?,?)",[nil,remember,'&','[0]',type,uniqid])
             return "'#{remember}'"
         elsif io == "y"
-            memory.db.execute("UPDATE #{table} SET output=? WHERE uniqid=?",[remember,uniqid])
+            memory.db.execute("UPDATE statement SET output=? WHERE uniqid=?",[remember,uniqid])
             return "'#{remember}'"
         else
             # This should really never happen

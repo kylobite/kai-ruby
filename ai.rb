@@ -21,15 +21,13 @@ conversation    = true
 prompt          = "> "
 
 puts
-puts " KAI v0.1"
+puts " KAI v0.2"
 puts "------------------"
 puts
 
 # Grab the checksum of the memory database
 checksum = File.open(dir + "/checksum") {|file| file.read}
 mode = "interactive"
-l = 0
-learn_cache = String.new
 
 while conversation
     print prompt
