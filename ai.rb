@@ -25,6 +25,13 @@ puts " KAI v0.2"
 puts "------------------"
 puts
 
+=begin
+    
+    File: constants
+        use: File.open("constants").read.scan /(\w+):\s(.+)\n/
+
+=end
+
 # Grab the checksum of the memory database
 checksum = File.open(dir + "/checksum") {|file| file.read}
 mode = "interactive"
@@ -49,11 +56,8 @@ while conversation
             mode = "interactive"
             puts "#{prompt}#{thought.reply(dir + '/tmp')}"
         else
-            # Fixes 'double input processing' bug
-            # Do not remove
-            if mode_cache != mode
-                next
-            end
+            # Do not remove! Hack fixes the double input processing bug
+            if mode_cache != mode then next end
 
             # Initiate mode
             if mode == "learn"
