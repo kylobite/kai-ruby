@@ -11,18 +11,22 @@ require "sqlite3"
 require "digest"
 
 # Notes
-# UPDATE table SET index=newvalue WHERE id=#
-# DELETE FROM table WHERE id=#
+# SELECT * FROM table
+# INSERT INTO table (columns) VALUES (values)
+# UPDATE table SET column=newvalue WHERE column=value
+# DELETE FROM table WHERE column=value
+# WHERE column LIKE val
 
 class Memory
-    attr_reader :db, :id
+    attr_reader :db, :memories
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(memories)
-        if not File.exist? memories
-            File.open(memories, File::CREAT)
+        @memories = memories
+        if not File.exist? @memories
+            File.open(@memories, File::CREAT)
         end
-        @db = SQLite3::Database.new(memories)
+        @db = SQLite3::Database.new(@memories)
         # All questions "?"
         @db.execute("CREATE TABLE IF NOT EXISTS statement
                     (id INTEGER PRIMARY KEY,
@@ -43,6 +47,10 @@ class Memory
         )
 
         dir = File.expand_path File.dirname(__FILE__)
-        File.open("#{dir}/checksum", "w") { |file| file.write(Digest::SHA2.file(memories).hexdigest) }
+        checksum "#{dir}/checksum"
+    end
+
+    def checksum(dir)
+        File.open(dir, "w") { |file| file.write(Digest::SHA2.file(@memories).hexdigest) }
     end
 end

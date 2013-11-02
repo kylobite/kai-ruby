@@ -96,7 +96,7 @@ class Think
             return
         end
 
-        # Sentence, question, or command?
+        # Categorize sentence type
         type = nil
         [".","?","!"].each do |t|
             if t == process[-1]
@@ -109,9 +109,7 @@ class Think
             return "Error: Invalid punctuation! KAI only accepts proper grammar."
         end
 
-        # Use punctuation to determine table
-
-        # Check for empty output
+        # Check empty output for Y
         output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
         id = (output.nil?) ? nil : output
 
@@ -119,48 +117,32 @@ class Think
         io_match    = nil
         io_matching = nil
 
-        # Get uniqid
+        # ID and Unique ID
         if id.nil?
             # Generate new id
             get_id      = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
             id = get_id.nil? ? 0 : get_id + 1
 
-            # No empty outputs
-            unique      = memory.db.execute("SELECT uniqid FROM statement WHERE id=?",[get_id])[0]
+            # Generate new IO match
+            unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
+                                             LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
             io_match    = (unique.nil?) ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
-
-            # ~
-
             io_matching     = "%x" % io_match
+
+
+            # IO match needs to be four characters
             if io_matching.size != 4
                 (4 - io_matching.size).times { io_matching = "0#{io_matching}" }
             end
 
-            # Needs to be 4 characters
-
+            # Create unique ID
             uniqid          = "#{session_id}#{io_matching}"
             if uniqid.size != 16 
                 puts "Error: Uniqid is messed up: #{uniqid}"
             end
         end
-        # else
-        #     # Empty output!
-        #     unique      = memory.db.execute("SELECT uniqid FROM statement WHERE id=?",[id])[0]
-        #     io_match    = unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i
-        # end
-        # io_matching     = "%x" % io_match
-        # if io_matching.size != 4
-        #     (4 - io_matching.size).times { io_matching = "0#{io_matching}" }
-        # end
 
-        # # Needs to be 4 characters
-
-        # uniqid          = "#{session_id}#{io_matching}"
-        # if uniqid.size != 16 
-        #     puts "Error: Uniqid is messed up: #{uniqid}"
-        # end
-
-        # Check syntax
+        # Determine if input or output
         io       = process.scan(/\|\s([xyXY]):\s.*/).flatten[0]
         remember = process.scan(/\|\s[xyXY]:\s(.*)/).flatten[0]
         if io == "x"
