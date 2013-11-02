@@ -47,10 +47,15 @@ class Memory
         )
 
         dir = File.expand_path File.dirname(__FILE__)
-        checksum "#{dir}/checksum"
+        checksum = "#{dir}/checksum"
+        if not File.exist? checksum
+            File.open(checksum, File::CREAT)
+        else
+            update_checksum checksum
+        end
     end
 
-    def checksum(dir)
+    def update_checksum(dir)
         File.open(dir, "w") { |file| file.write(Digest::SHA2.file(@memories).hexdigest) }
     end
 end
