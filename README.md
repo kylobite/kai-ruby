@@ -1,4 +1,4 @@
-![KAI Egg](http://i.imgur.com/1sqlydY.png)
+![KAI Egg](logo.png)
 -----
 KAI Artificial Intelligence<br>Version 0.3
 
