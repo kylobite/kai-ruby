@@ -21,7 +21,7 @@ conversation    = true
 prompt          = "> "
 
 puts
-puts " KAI v0.2"
+puts " KAI v0.3"
 puts "------------------"
 puts
 
@@ -54,7 +54,7 @@ while conversation
         if !mode or mode.nil?
             # This really should not happen
             mode = "interactive"
-            puts "#{prompt}#{thought.reply(dir + '/tmp')}"
+            puts "#{prompt}#{thought.reply(memory)}"
         else
             # Do not remove! Hack fixes the double input processing bug
             if mode_cache != mode then next end
@@ -63,12 +63,12 @@ while conversation
             if mode == "learn"
                 puts "#{thought.learn(memory, session_id)}"
             elsif mode == "interactive"
-                puts "#{prompt}#{thought.reply(dir + '/tmp')}"
+                puts "#{prompt}#{thought.reply(memory)}"
             elsif mode == "curiosity"
                 # Be curios about stuff
             else
                 # This should not happen
-                puts "#{prompt}#{thought.reply(dir + '/tmp')}"
+                puts "#{prompt}#{thought.reply(memory)}"
             end
         end
     end
