@@ -9,6 +9,7 @@ Purpose:    KAI Bootstrap
 
 require_relative "memory"
 require_relative "think"
+require_relative "json"
 
 require "digest"
 
@@ -21,7 +22,7 @@ conversation    = true
 prompt          = "> "
 
 puts
-puts " KAI v0.3"
+puts " KAI v0.3.1"
 puts "------------------"
 puts
 
@@ -71,5 +72,6 @@ while conversation
                 puts "#{prompt}#{thought.reply(memory)}"
             end
         end
+        checksum = memory.update_checksum
     end
 end

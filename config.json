@@ -1,0 +1,39 @@
+{
+    "groups": [
+        "root",
+        "admin",
+        "user"
+    ],
+    "users": {
+        "kylobite": {
+            "group": "user"
+        },
+        "kai": {
+            "group": "admin"
+        },
+        "god": {
+            "group": "root"
+        }
+    },
+    "sudo": {
+        "passphrase": {
+            "user": "hack",
+            "admin": "backdoor",
+            "root": "~&//backdoor"
+        },
+        "privilege": {
+            "user": [
+                "pseudo-learn"
+            ],
+            "admin": [
+                "user",
+                "database",
+                "constants"
+            ],
+            "root": [
+                "admin",
+                "terminate"
+            ]
+        }
+    }   
+}

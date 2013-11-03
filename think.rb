@@ -7,6 +7,8 @@ Purpose:    KAI Thought Process
 
 =end
 
+require "io/console"    # STDIN.noecho(&:gets) | password
+
 class Think
     attr_reader :string
 
