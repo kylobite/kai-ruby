@@ -18,14 +18,13 @@ class Think
     end
 
     # Determine if mode was set
-    def mode_set()
+    def mode_set(modes)
         phrase = @string.scan(/~&\/\/mode:.+/).flatten[0]
         if phrase.nil? or phrase.empty?
             return false
         end
 
         extract = phrase.scan(/~&\/\/mode:(.+)/).flatten[0]
-        modes = ["learn", "interactive", "curiosity"]
         modes.each do |mode|
             if extract == mode
                 puts "Starting #{mode} mode..."
@@ -155,7 +154,7 @@ class Think
             memory.db.execute("UPDATE statement SET output=? WHERE id=?",[remember,id])
             return "'#{remember}'"
         else
-            # This should really never happen
+            # This should never happen
             raise "Logic error @ Think::learn"
         end
     end

@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+=begin
+
+Developer:  Kylobite
+Purpose:    KAI Origin
+
+=end
+
+require_relative "bootstrap"
+
+kai = Bootstrap.new("brain.db")
+kai.header("0.3.2")
+kai.start

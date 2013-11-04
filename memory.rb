@@ -62,7 +62,7 @@ class Memory
         if not File.exist? checksum
             File.open(checksum, File::CREAT)
         else
-            update_checksum checksum
+            update_checksum
         end
     end
 
