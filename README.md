@@ -45,7 +45,7 @@ or
 Version Production.Development.Patch
 ```
 
-For this reason, if the newest version has only gone up by 0.0.1, update at your risk. It would be best to at least wait for it to increment by 0.1.0.
+For this reason, if the newest version has only gone up by 0.0.1, update at your own risk. It would be best to at least wait for it to increment by 0.1.0.
 
 Should these goals be met, KAI will be much more than just artificial intelligence, but displaying characteristics of a living organism.
 ***
