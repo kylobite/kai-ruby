@@ -53,7 +53,7 @@ class Bootstrap
     def curiosity(thought)
         # Please forgive me
         puts "Such curiosity. Much thinking. Wow."
-        return ""
+        return String.new
     end
     # </modes>
 
@@ -63,7 +63,7 @@ class Bootstrap
             input = gets.chomp
 
             # `exit` to exit. Remember this.
-            if input == "exit" 
+            if input == "exit" then
                 @conversation = false
             else
                 # Process input
@@ -88,7 +88,7 @@ class Bootstrap
                     mode = send(modes[modes.index @mode], thought)
 
                     # Another sanity check
-                    if mode.empty? or mode.nil?
+                    if !mode.empty? or !mode.nil?
                         puts mode
                     else
                         # This should not happen
