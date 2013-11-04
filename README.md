@@ -12,6 +12,12 @@ As of now, The KAI Project is an evolving artificial intelligence. The hope for 
 6.  Intuitively modify its imperfection
 
 
+###Dependencies
+
++ SQLite3 command line tool
++ SQLite3 Ruby gem
+
+
 ###How To
 
 Installation and initialization:
