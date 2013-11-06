@@ -7,6 +7,8 @@ Purpose:    KAI Memories
 
 =end
 
+require "rubygems"
+require "bundler/setup"
 require "sqlite3"
 require "digest"
 

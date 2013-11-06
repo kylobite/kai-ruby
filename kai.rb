@@ -10,5 +10,5 @@ Purpose:    KAI Origin
 require_relative "bootstrap"
 
 kai = Bootstrap.new("brain.db")
-kai.header("0.3.3")
+kai.header("0.3.4")
 kai.start

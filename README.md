@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence<br>Version 0.3.3
+KAI Artificial Intelligence<br>Version 0.3.4
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -25,8 +25,8 @@ Installation and initialization:
 ```bash
 git clone git@github.com:kylobite/kai.git
 cd kai
-chmod +x kai
-./kai
+sh install.sh
+ruby kai.rb
 ```
 
 If all goes well, you show now see something like this:
