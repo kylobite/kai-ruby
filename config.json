@@ -2,9 +2,13 @@
     "groups": [
         "root",
         "admin",
-        "user"
+        "user",
+        "plebeian"
     ],
     "users": {
+        "guest": {
+            "group": "plebeian"
+        },
         "kylobite": {
             "group": "user"
         },
@@ -16,22 +20,31 @@
         }
     },
     "sudo": {
-        "passphrase": {
+        "passphrases": {
+            "plebeian": "",
             "user": "hack",
             "admin": "backdoor",
             "root": "~&//backdoor"
         },
-        "privilege": {
+        "privileges": {
+            "plebeian": [
+                "modes"
+            ],
             "user": [
+                "modes",
                 "pseudo-learn"
             ],
             "admin": [
-                "user",
+                "modes",
+                "pseudo-learn",
                 "database",
                 "constants"
             ],
             "root": [
-                "admin",
+                "modes",
+                "pseudo-learn",
+                "database",
+                "constants",
                 "terminate"
             ]
         }

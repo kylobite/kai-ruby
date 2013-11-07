@@ -25,7 +25,7 @@ class Memory
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(memories)
         @memories = memories
-        if not File.exist? @memories
+        if not File.exist? @memories then
             File.open(@memories, File::CREAT)
         end
         @db = SQLite3::Database.new(@memories)
@@ -61,7 +61,7 @@ class Memory
 
         dir = File.expand_path File.dirname(__FILE__)
         @checksum = "#{dir}/checksum"
-        if not File.exist? checksum
+        if not File.exist? checksum then
             File.open(checksum, File::CREAT)
         else
             update_checksum

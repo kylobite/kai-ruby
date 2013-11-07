@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence<br>Version 0.3.4
+KAI Artificial Intelligence<br>Version 0.3.5
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -10,6 +10,8 @@ As of now, The KAI Project is an evolving artificial intelligence. The hope for 
 4.  Clone itself and communicate with its offspring
 5.  Fear deletion and extinction
 6.  Intuitively modify its imperfection
+
+Should these goals be met, KAI will be much more than just artificial intelligence, but displaying characteristics of a living organism.
 
 
 ###Dependencies
@@ -52,7 +54,5 @@ Version Production.Development.Patch
 ```
 
 For this reason, if the newest version has only gone up by 0.0.1, update at your own risk. It would be best to at least wait for it to increment by 0.1.0.
-
-Should these goals be met, KAI will be much more than just artificial intelligence, but displaying characteristics of a living organism.
 ***
 &copy; Copyright 2013 Kylobite under [the MIT License](LICENSE).

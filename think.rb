@@ -7,8 +7,6 @@ Purpose:    KAI Thought Process
 
 =end
 
-require "io/console"    # STDIN.noecho(&:gets) | password
-
 class Think
     attr_reader :string
 
@@ -127,7 +125,7 @@ class Think
         io_matching = nil
 
         # ID and Unique ID
-        if id.nil?
+        if id.nil? then
             # Generate new id
             get_id      = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
             id = get_id.nil? ? "0" : get_id + 1
@@ -152,7 +150,7 @@ class Think
 
         # Grab text to remember
         remember = process.scan(/\|\s[xyXY]:\s(.*)/).flatten[0]
-        if io.downcase == "x"
+        if io.downcase == "x" then
             memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
                                VALUES (?,?,?,?,?,?)",[id,remember,'&','[0]',type,uniqid])
             return "'#{remember}'"

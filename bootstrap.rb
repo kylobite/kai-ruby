@@ -9,7 +9,7 @@ Purpose:    KAI Bootstrap
 
 require_relative "memory"
 require_relative "think"
-#require_relative "config"
+require_relative "config"
 
 require "digest"
 
@@ -18,7 +18,7 @@ require "digest"
 #   use: File.open("constants").read.scan /(\w+):\s(.+)\n/
 
 class Bootstrap
-    attr_reader :memory, :session_id, :conversation, :mode, :prompt, :checksum
+    attr_reader :memory, :config, :session_id, :conversation, :mode, :prompt, :checksum
 
     # Set class constants
     def initialize(memories)
@@ -26,6 +26,9 @@ class Bootstrap
         dir             = File.expand_path File.dirname(__FILE__)
         memdir          = "#{dir}/#{memories}"
         @memory         = Memory.new(memdir)
+
+        # Grab the configuration settings
+        @config = Configuration.new
 
         # Prepare for conversation
         @session_id     = Digest::SHA2.hexdigest(Time.now.to_f.to_s)[0..11]
@@ -35,6 +38,17 @@ class Bootstrap
 
         # Grab the checksum of the memory database
         @checksum = File.open("#{dir}/checksum") {|file| file.read}
+    end
+
+    def login(enable)
+        if enable then
+            return @config.validate
+        end
+        return "guest"
+    end
+
+    def rights (usergroup)
+        return @config.privileges(usergroup)
     end
 
     def header(version)
@@ -57,7 +71,13 @@ class Bootstrap
     end
     # </modes>
 
-    def start()
+    def start(privileges)
+        # Permissions set via usergroup
+        group   = privileges[0]
+        allowed = privileges[1]
+
+        puts "\n\nUsergroup: #{group}\n\n"
+
         while @conversation
             print @prompt
             input = gets.chomp
@@ -76,7 +96,7 @@ class Bootstrap
                 @mode        = mode_check ? mode_check : @mode
 
                 # Sanity check
-                if @mode.empty? or @mode.nil?
+                if @mode.empty? or @mode.nil? then
                     # This should not happen
                     @mode = "interactive"
                     puts interactive(thought)
@@ -88,7 +108,7 @@ class Bootstrap
                     mode = send(modes[modes.index @mode], thought)
 
                     # Another sanity check
-                    if !mode.empty? or !mode.nil?
+                    if !mode.empty? or !mode.nil? then
                         puts mode
                     else
                         # This should not happen
