@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence<br>Version 0.3.5
+KAI Artificial Intelligence<br>Version 0.3.6
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -16,6 +16,7 @@ Should these goals be met, KAI will be much more than just artificial intelligen
 
 ###Dependencies
 
++ Ruby 1.9+
 + SQLite3 command line tool
 + SQLite3 Ruby gem
 
@@ -48,9 +49,11 @@ If all goes well, you show now see something like this:
 The current version of KAI has two interpretations:
 
 ```
-Version Goal.Progress.Test
+Version Goal.Progress.Testing
 or
 Version Production.Development.Patch
+or
+Version Release.Beta.Alpha
 ```
 
 For this reason, if the newest version has only gone up by 0.0.1, update at your own risk. It would be best to at least wait for it to increment by 0.1.0.
