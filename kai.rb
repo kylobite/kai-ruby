@@ -10,7 +10,7 @@ Purpose:    KAI Origin
 require_relative "bootstrap"
 
 kai = Bootstrap.new "brain.db"
-kai.header "0.3.6"
+kai.header "0.3.7"
 # Can users log in?
 # What rights will they get?
 kai.start(kai.rights(kai.login(true)))
