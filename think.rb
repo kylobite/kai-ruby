@@ -18,23 +18,32 @@ class Think
     # Determine if mode was set
     def mode_set(modes)
         phrase = @string.scan(/~&\/\/mode:.+/).flatten[0]
+        # Does it look like a mode?
         if phrase.nil? or phrase.empty? then
             return false
         end
 
+        # Can the user access this mode?
+        state = false
         extract = phrase.scan(/~&\/\/mode:(.+)/).flatten[0]
         modes.each do |mode|
             if extract == mode then
+                state = true
                 puts "Starting #{mode} mode..."
                 return mode
             end
         end
-        return false
+
+        # Tell user the mode failed
+        if !state then
+            puts "Invalid or unauthorized mode"
+        end
+        return nil
     end
 
     # Reply to user input; Setting the memory database
     def reply(memory)
-        memories = memory.db.execute("SELECT input, output FROM statement")
+        memories = memory.db.execute "SELECT input, output FROM statement"
 
         # Default responses if memory database is empty/nonexistent
         if memories.nil? or memories.empty? then
@@ -42,7 +51,7 @@ class Think
             return greeting[Random.new.rand(greeting.size)].capitalize + "."
         end
 
-        use = lookup(memories)
+        use = lookup memories
         content = use.inject {|sum,u| sum + u }
 
         # Do if KAI thought of something
@@ -65,14 +74,14 @@ class Think
         # Tokenize user input
         said = Array.new
         said_phrase = @string.scan(/[a-zA-Z0-9'-]+/).flatten.each do |sp|
-            said.push(sp.downcase)
+            said.push sp.downcase
         end
 
         used = Array.new
         u = 0
         # Cross-referencing
         memories.each do |ms|
-            used.push(0)
+            used.push 0
             # Tokenize memories
             ms[0].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
                 said.each do |s|
@@ -133,7 +142,7 @@ class Think
             # Generate new IO match
             unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
                                              LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
-            io_match    = (unique.nil?) ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
+            io_match    = unique.nil? ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
             io_matching = "%x" % io_match
 
             # IO match needs to be four characters

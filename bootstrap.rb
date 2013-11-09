@@ -13,19 +13,15 @@ require_relative "config"
 
 require "digest"
 
-# Notes
-# File: constants
-#   use: File.open("constants").read.scan /(\w+):\s(.+)\n/
-
 class Bootstrap
     attr_reader :memory, :config, :session_id, :conversation, :mode, :prompt, :checksum
 
     # Set class constants
     def initialize(memories)
         # Grab the memory database
-        dir             = File.expand_path File.dirname(__FILE__)
+        dir             = File.expand_path File.dirname __FILE__
         memdir          = "#{dir}/#{memories}"
-        @memory         = Memory.new(memdir)
+        @memory         = Memory.new memdir
 
         # Grab the configuration settings
         @config = Configuration.new
@@ -33,7 +29,7 @@ class Bootstrap
         # Prepare for conversation
         @session_id     = Digest::SHA2.hexdigest(Time.now.to_f.to_s)[0..11]
         @conversation   = true
-        @mode = "interactive"
+        @mode           = "interactive"
         @prompt         = "> "
 
         # Grab the checksum of the memory database
@@ -48,7 +44,7 @@ class Bootstrap
     end
 
     def rights (usergroup)
-        return @config.privileges(usergroup)
+        return @config.privileges usergroup
     end
 
     def header(version)
@@ -78,6 +74,14 @@ class Bootstrap
 
         puts "\n\nUsergroup: #{group}\n\n"
 
+        modes = Array.new
+        allowed.each do |right|
+            mode = right[/mode:(.*)/,1]
+            if !mode.nil? then
+                modes.push mode
+            end
+        end
+
         while @conversation
             print @prompt
             input = gets.chomp
@@ -87,32 +91,37 @@ class Bootstrap
                 @conversation = false
             else
                 # Process input
-                thought = Think.new(input)
+                thought = Think.new input
 
                 # Check for new mode state
+                mode_skip   = false
                 mode_cache  = @mode
-                modes       = ["learn","interactive","curiosity"]
                 mode_check  = thought.mode_set modes
-                @mode        = mode_check ? mode_check : @mode
+                if mode_check.nil? then
+                    mode_skip = true
+                else
+                    @mode = mode_check ? mode_check : @mode
+                end
 
                 # Sanity check
                 if @mode.empty? or @mode.nil? then
                     # This should not happen
                     @mode = "interactive"
-                    puts interactive(thought)
+                    puts interactive thought
                 else
+
                     # Do not remove! Hack fixes the double input processing bug
-                    if mode_cache != @mode then next end
+                    if mode_cache != @mode or mode_skip then next end
 
                     # Get result of mode function
-                    mode = send(modes[modes.index @mode], thought)
+                    mode = send modes[modes.index @mode], thought
 
                     # Another sanity check
                     if !mode.empty? or !mode.nil? then
                         puts mode
                     else
                         # This should not happen
-                        puts interactive(thought)
+                        puts interactive thought
                     end
                 end
 

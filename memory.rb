@@ -26,7 +26,7 @@ class Memory
     def initialize(memories)
         @memories = memories
         if not File.exist? @memories then
-            File.open(@memories, File::CREAT)
+            File.open @memories, File::CREAT
         end
         @db = SQLite3::Database.new(@memories)
         @db.execute("CREATE TABLE IF NOT EXISTS statement
@@ -59,10 +59,10 @@ class Memory
                      )"
         )
 
-        dir = File.expand_path File.dirname(__FILE__)
+        dir = File.expand_path File.dirname __FILE__
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
-            File.open(checksum, File::CREAT)
+            File.open checksum, File::CREAT
         else
             update_checksum
         end

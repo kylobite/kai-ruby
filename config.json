@@ -28,21 +28,21 @@
         },
         "privileges": {
             "plebeian": [
-                "modes"
+                "mode:interactive"
             ],
             "user": [
-                "modes",
-                "pseudo-learn"
+                "mode:interactive",
+                "mode:learn"
             ],
             "admin": [
-                "modes",
-                "pseudo-learn",
+                "mode:interactive",
+                "mode:learn",
                 "database",
                 "constants"
             ],
             "root": [
-                "modes",
-                "pseudo-learn",
+                "mode:interactive",
+                "mode:learn",
                 "database",
                 "constants",
                 "terminate"

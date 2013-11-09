@@ -14,9 +14,9 @@ class Configuration
     attr_reader :json, :groups, :users, :sudo
 
     def initialize()
-        dir     = File.expand_path File.dirname(__FILE__)
+        dir     = File.expand_path File.dirname __FILE__
         json    = File.open("#{dir}/config.json") {|file| file.read}
-        @json   = JSON.parse(json)
+        @json   = JSON.parse json
         @groups = @json["groups"]
         @users  = @json["users"]
         @sudo   = @json["sudo"]
