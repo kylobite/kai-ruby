@@ -35,7 +35,7 @@ class Think
         end
 
         # Tell user the mode failed
-        if !state then
+        if not state then
             puts "Invalid or unauthorized mode"
         end
         return nil
@@ -74,14 +74,14 @@ class Think
         # Tokenize user input
         said = Array.new
         said_phrase = @string.scan(/[a-zA-Z0-9'-]+/).flatten.each do |sp|
-            said.push sp.downcase
+            said << sp.downcase
         end
 
         used = Array.new
         u = 0
         # Cross-referencing
         memories.each do |ms|
-            used.push 0
+            used << 0
             # Tokenize memories
             ms[0].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
                 said.each do |s|
@@ -125,7 +125,7 @@ class Think
         output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
         id = (output.nil?) ? nil : output
 
-        if io.downcase == "x" and !id.nil? then
+        if io.downcase == "x" and not id.nil? then
             id += 1
         end
 

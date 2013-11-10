@@ -77,8 +77,8 @@ class Bootstrap
         modes = Array.new
         allowed.each do |right|
             mode = right[/mode:(.*)/,1]
-            if !mode.nil? then
-                modes.push mode
+            if not mode.nil? then
+                modes << mode
             end
         end
 
@@ -117,7 +117,7 @@ class Bootstrap
                     mode = send modes[modes.index @mode], thought
 
                     # Another sanity check
-                    if !mode.empty? or !mode.nil? then
+                    if not mode.empty? or not mode.nil? then
                         puts mode
                     else
                         # This should not happen

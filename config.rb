@@ -32,12 +32,12 @@ class Configuration
         @users.keys.each do |u|
             if u == user then
                 user_state[0] = true
-                user_state.push @users[user]["group"]
+                user_state << @users[user]["group"]
                 next
             end
         end
 
-        if user_state and (!user_state.nil? or !user_state.empty?) then
+        if user_state and (not user_state.nil? or not user_state.empty?) then
             print "Passwords: "
             password = STDIN.noecho(&:gets).gsub(/\n/,"")
 
@@ -54,7 +54,7 @@ class Configuration
                 group = @users[user]["group"]
 
                 # Sanity check
-                if !group.empty? then
+                if not group.empty? then
                     return group
                 else 
                     return "guest"

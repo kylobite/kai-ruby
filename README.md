@@ -23,12 +23,21 @@ Should these goals be met, KAI will be much more than just artificial intelligen
 
 ###How To
 
-Installation and initialization:
-
+Download:
 ```bash
 git clone git@github.com:kylobite/kai.git
 cd kai
+```
+
+Install dependencies (if you don't already have them):
+
+```bash
 sh install.sh
+```
+
+Launch KAI:
+
+```bash
 ruby kai.rb
 ```
 
