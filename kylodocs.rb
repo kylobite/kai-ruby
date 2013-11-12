@@ -73,45 +73,52 @@ class KyloDocs
             if new_key == "delete" then
                 *keys = keys.split("/")
                 keys.inject(hash, :fetch).delete(value)
-                return hash
             else
                 hash.delete(value)
-                return hash
             end
+            return hash
         when "array":
             if exists keys then
                 *keys = keys.split("/")
                 keys.inject(hash, :fetch)[hash.size] = value
-                return hash
             else
                 hash[hash.size] = value
-                return hash
             end
+            return hash
         when "default":
             if exists keys then
                 *keys = keys.split("/")
                 keys.inject(hash, :fetch)[new_key] = value
-                return hash
             else
                 hash[new_key] = value
-                return hash
             end
+            return hash
         else
             raise "Parameter error @ KyloDocs::set_array_key"
         end
     end
 
     def serialize(hash)
-        return "#{hash.inspect}"
-        # Rest later
+        return "#{hash.to_json}"
+    end
+
+    def unserialize(string)
+        return string
     end
 
     def create()
         File.open("#{@file}.json", File::RDWR|File::CREAT, 0644) { |file| file.write({"#{@file}"=>nil}.to_json) }
     end
 
-    def read()
+    def read(string = false)
+        contents = File.open("#{@file}.json") { |file| file.read }
 
+        if string then
+            return serialize contents
+        else
+            return contents
+        end
+        return String.new
     end
 end
 
