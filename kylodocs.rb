@@ -101,6 +101,18 @@ class KyloDocs
         end
     end
 
+    def serialize(hash)
+        return "#{hash.inspect}"
+        # Rest later
+    end
+
+    def create()
+        File.open("#{@file}.json", File::RDWR|File::CREAT, 0644) { |file| file.write({"#{@file}"=>nil}.to_json) }
+    end
+
+    def read()
+
+    end
 end
 
 
