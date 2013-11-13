@@ -9,6 +9,7 @@ KyloDocs:   https://github.com/kylobite/kylodocs
 =end
 
 require "json"
+require "tempfile"
 require "fileutils"
 
 class KyloDocs
@@ -123,18 +124,27 @@ class KyloDocs
     end
 
     def update(mode = default, path = null)
-        string
-        keys = Array.new @file
+        hash  = JSON.parse(File.open("#{@file}.json") { |file| file.read })
+        keys    = Array.new @file
         if exists path and path != "*" then
             keyring = path.split("/")
             keyring.each do {|key| keys << key}
         end
 
         if mode == "array" then
-            set_array_key(string,null,data,keys,mode)
+            hash = set_array_key(hash,null,data,keys,mode)
         else
-            
+            hash = @data.each { |k,v| set_array_key(hash,k,v,keys,mode) }
         end
+        string = hash.to_json.encode("UTF-8")
+        tmp = Tempfile.new
+        tmp.write(string)
+        tmp.close
+        FileUtils.mv(tmp.path, @dir)
+        db = File.open("#{@file}.json", File::RDWR|File::CREAT, 0644)
+        db.flock(File::LOCK_EX)
+        data = hash
+        return true
     end
 
     def delete(verify = false)
