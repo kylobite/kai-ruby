@@ -9,6 +9,7 @@ KyloDocs:   https://github.com/kylobite/kylodocs
 =end
 
 require "json"
+require "fileutils"
 
 class KyloDocs
     attr_reader :file, :data, :base, :dir, :path
@@ -63,7 +64,7 @@ class KyloDocs
         end
 
         # Please, never be this lazy
-        Dir.mkdir("memories") unless Dir.exist? "memories"
+        FileUtils.mkpath("memories") unless Dir.exist? "memories"
         return "#{@base}/#{memories}"
     end
 
@@ -103,7 +104,7 @@ class KyloDocs
     end
 
     def unserialize(string)
-        return string
+        return JSON.parse string
     end
 
     def create()
@@ -119,6 +120,25 @@ class KyloDocs
             return contents
         end
         return String.new
+    end
+
+    def update(mode = default, path = null)
+        string
+        keys = Array.new @file
+        if exists path and path != "*" then
+            keyring = path.split("/")
+            keyring.each do {|key| keys << key}
+        end
+
+        if mode == "array" then
+            set_array_key(string,null,data,keys,mode)
+        else
+            
+        end
+    end
+
+    def delete(verify = false)
+        if verify then File.delete("#{@file}.json") end
     end
 end
 
