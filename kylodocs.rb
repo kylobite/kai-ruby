@@ -4,7 +4,7 @@
 
 Developer:  Kylobite
 Purpose:    Ruby port of KyloDocs
-Version:    1.0.0
+Version:    1.0
 KyloDocs:   https://github.com/kylobite/kylodocs
 
 =end
