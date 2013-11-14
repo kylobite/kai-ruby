@@ -4,7 +4,7 @@
 
 Developer:  Kylobite
 Purpose:    Ruby port of KyloDocs
-Version:    0.1.0
+Version:    1.0.0
 KyloDocs:   https://github.com/kylobite/kylodocs
 
 =end
@@ -25,7 +25,7 @@ class KyloDocs
             @path ||= search base
             @dir    = "#{@path}/#{file}"
 
-            if not File.exists? @dir then create end
+            if not File.exists? "#{@dir}.json" then create end
         end
     end
 
@@ -92,7 +92,6 @@ class KyloDocs
             else
                 hash[key] = value
             end
-            puts hash.inspect
             return hash
         else
             raise "Parameter error @ KyloDocs::set_array_key"
@@ -135,7 +134,9 @@ class KyloDocs
         else
             hash = @data.each {|k,v| set_array_key(hash,keys,k,v,mode)}
         end
-        string = hash.to_json.encode("UTF-8")
+        # Please forgive me
+        hack    = {"#{@file}"=>hash}
+        string  = hack.to_json.encode("UTF-8")
         tmp = Tempfile.new "tmp"
         tmp.write(string)
         FileUtils.mv(tmp.path, "#{@dir}.json")
@@ -144,7 +145,7 @@ class KyloDocs
         tmp.close
         tmp.unlink
         db.close
-        data = hash
+        @data = hack
         return true
     end
 
