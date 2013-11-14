@@ -24,7 +24,7 @@ class Configuration
 
     # Determine if user data is exists
     def validate()
-        print "Username:  "
+        print "Username: "
         user = gets.chomp
 
         # Check user value
@@ -38,7 +38,7 @@ class Configuration
         end
 
         if user_state and (not user_state.nil? or not user_state.empty?) then
-            print "Passwords: "
+            print "Password: "
             password = STDIN.noecho(&:gets).gsub(/\n/,"")
 
             # Check password value

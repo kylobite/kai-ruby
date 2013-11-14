@@ -4,6 +4,7 @@
 
 Developer:  Kylobite
 Purpose:    Ruby port of KyloDocs
+Version:    0.1.0
 KyloDocs:   https://github.com/kylobite/kylodocs
 
 =end
@@ -22,16 +23,16 @@ class KyloDocs
             @base = File.expand_path File.dirname __FILE__
 
             @path ||= search base
-            @dir    = "#{@path}/#{file}.json"
+            @dir    = "#{@path}/#{file}"
 
-            if not File.exists? @dir then created end
+            if not File.exists? @dir then create end
         end
     end
 
     # Is `var` empty or nil?
     # This is me being lazy
     def exists(var)
-        return (!var.empty? and !var.nil?) ? true : false
+        return (var.nil? or var.empty?) ? false : true
     end
 
     def get(param)
@@ -69,31 +70,29 @@ class KyloDocs
         return "#{@base}/#{memories}"
     end
 
-    def set_array_key(hash, new_key, value, keys, mode)
+    def set_array_key(hash, keys, key, value, mode)
         case mode
-        when "remove":
-            if new_key == "delete" then
-                *keys = keys.split("/")
+        when "remove"
+            if key == "delete" then
                 keys.inject(hash, :fetch).delete(value)
             else
                 hash.delete(value)
             end
             return hash
-        when "array":
+        when "array"
             if exists keys then
-                *keys = keys.split("/")
                 keys.inject(hash, :fetch)[hash.size] = value
             else
                 hash[hash.size] = value
             end
             return hash
-        when "default":
+        when "default"
             if exists keys then
-                *keys = keys.split("/")
-                keys.inject(hash, :fetch)[new_key] = value
+                keys.inject(hash, :fetch)[key] = value
             else
-                hash[new_key] = value
+                hash[key] = value
             end
+            puts hash.inspect
             return hash
         else
             raise "Parameter error @ KyloDocs::set_array_key"
@@ -109,11 +108,11 @@ class KyloDocs
     end
 
     def create()
-        File.open("#{@file}.json", File::RDWR|File::CREAT, 0644) { |file| file.write({"#{@file}"=>nil}.to_json) }
+        File.open("#{@dir}.json", File::RDWR|File::CREAT, 0644) { |file| file.write({"#{@file}"=>{}}.to_json) }
     end
 
     def read(string = false)
-        contents = File.open("#{@file}.json") { |file| file.read }
+        contents = File.open("#{@dir}.json") { |file| file.read }
 
         if string then
             return serialize contents
@@ -123,32 +122,34 @@ class KyloDocs
         return String.new
     end
 
-    def update(mode = default, path = null)
-        hash  = JSON.parse(File.open("#{@file}.json") { |file| file.read })
-        keys    = Array.new @file
-        if exists path and path != "*" then
+    def update(mode = "default", path = nil)
+        hash = JSON.parse(File.open("#{@dir}.json") { |file| file.read })
+        keys = [@file]
+        if exists path and path != "*" then keys = path
             keyring = path.split("/")
-            keyring.each do {|key| keys << key}
+            keyring.each {|key| keys << key}
         end
 
         if mode == "array" then
-            hash = set_array_key(hash,null,data,keys,mode)
+            hash = set_array_key(hash,keys,nil,data,mode)
         else
-            hash = @data.each { |k,v| set_array_key(hash,k,v,keys,mode) }
+            hash = @data.each {|k,v| set_array_key(hash,keys,k,v,mode)}
         end
         string = hash.to_json.encode("UTF-8")
-        tmp = Tempfile.new
+        tmp = Tempfile.new "tmp"
         tmp.write(string)
-        tmp.close
-        FileUtils.mv(tmp.path, @dir)
-        db = File.open("#{@file}.json", File::RDWR|File::CREAT, 0644)
+        FileUtils.mv(tmp.path, "#{@dir}.json")
+        db = File.open("#{@dir}.json", File::RDWR|File::CREAT, 0644)
         db.flock(File::LOCK_EX)
+        tmp.close
+        tmp.unlink
+        db.close
         data = hash
         return true
     end
 
     def delete(verify = false)
-        if verify then File.delete("#{@file}.json") end
+        if verify then File.delete("#{@dir}.json") end
     end
 end
 
