@@ -9,7 +9,7 @@ Purpose:    KAI Origin
 
 require_relative "bootstrap"
 
-kai = Bootstrap.new "brain.db"
+kai = Bootstrap.new "brain"
 kai.header "0.3.8"
 # Can users log in?
 # What rights will they get?

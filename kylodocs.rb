@@ -116,7 +116,7 @@ class KyloDocs
         if string then
             return serialize contents
         else
-            return contents
+            return unserialize contents
         end
         return String.new
     end
