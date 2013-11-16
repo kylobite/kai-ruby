@@ -1,6 +1,6 @@
-.bundle/
-memories/
-random/
 brain.db
-test.rb
 checksum
+.bundle
+ideas
+test.rb
+memories/brain.json

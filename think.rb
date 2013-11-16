@@ -43,8 +43,7 @@ class Think
 
     # Reply to user input; Setting the memory database
     def reply(memory)
-        # memories = memory.db.execute "SELECT input, output FROM statement"
-        memories    = memory.read["statements"]
+        memories = memory.db.execute "SELECT input, output FROM statement"
 
         # Default responses if memory database is empty/nonexistent
         if memories.nil? or memories.empty? then
@@ -66,7 +65,7 @@ class Think
             # Look for similiar words
             # If all fails: Store string in curiosity and random
 
-            return memories[Random.new.rand(memories.size)]["output"]
+            return memories[Random.new.rand(memories.size)][1]
         end
     end
 
@@ -84,7 +83,7 @@ class Think
         memories.each do |ms|
             used << 0
             # Tokenize memories
-            ms["input"].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
+            ms[0].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
                 said.each do |s|
                     if s == m then
                         used[u] += 1
@@ -123,12 +122,7 @@ class Think
         io = process.scan(/\|\s([xyXY]):\s.*/).flatten[0]
 
         # Check empty output for Y
-        # output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
-        output = nil
-        Hash[memory.read["statements"].to_a.reverse].each do |m|
-            if m["output"] == '&' then output = m["id"].to_i end
-            break if !output.nil?
-        end
+        output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
         id = (output.nil?) ? nil : output
 
         if io.downcase == "x" and not id.nil? then
