@@ -16,6 +16,12 @@ require "fileutils"
 class KyloDocs
     attr_reader :file, :data, :base, :dir, :path
 
+    # Possibly add optional `file` param
+    # Instead instance a one-use session
+    # Will only manipulate `@data` param
+    # Will run in :tmp: mode until close
+    # I love writing evenly spaced lines
+    # I also like messing with OCD people
     def initialize(file, path = nil)
         if exists file then
             @file = file
@@ -70,7 +76,9 @@ class KyloDocs
         return "#{@base}/#{memories}"
     end
 
+    # This is the magic behind the `update` function
     def set_array_key(hash, keys, key, value, mode)
+        # [walking,down,this].inject(hash, :fetch) == hash[walking][down][this]
         case mode
         when "remove"
             if key == "delete" then
@@ -96,7 +104,6 @@ class KyloDocs
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
-            puts hash
             return hash
         when "default"
             if exists keys then
