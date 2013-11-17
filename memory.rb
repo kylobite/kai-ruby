@@ -23,11 +23,11 @@ class Memory
     attr_reader :db, :memories, :checksum
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
-    def initialize(memories)
-        @memories = memories
-        if not File.exist? @memories then
-            File.open @memories, File::CREAT
-        end
+    def initialize(dir, memories)
+        @memories = "#{dir}/#{memories}"
+        Dir.mkdir dir unless Dir.exists? dir
+        File.open @memories, File::CREAT unless File.exists? @memories
+        
         @db = SQLite3::Database.new(@memories)
         @db.execute("CREATE TABLE IF NOT EXISTS statement
                      (
@@ -59,7 +59,6 @@ class Memory
                      )"
         )
 
-        dir = File.expand_path File.dirname __FILE__
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
             File.open checksum, File::CREAT
