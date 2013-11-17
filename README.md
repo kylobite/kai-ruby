@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence<br>Version 0.3.8 [STABLE]
+KAI Artificial Intelligence<br>Version 0.3.8
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -55,7 +55,7 @@ If all goes well, you show now see something like this:
 
 ###Versions
 
-The current version of KAI has two interpretations:
+The current version of KAI has three interpretations:
 
 ```
 Version Goal.Progress.Testing
