@@ -55,7 +55,7 @@ If all goes well, you show now see something like this:
 
 ###Versions
 
-The current version of KAI has two interpretations:
+The current version of KAI has three interpretations:
 
 ```
 Version Goal.Progress.Testing

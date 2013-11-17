@@ -74,33 +74,34 @@ class KyloDocs
         case mode
         when "remove"
             if key == "delete" then
-                # keys.inject(hash, :fetch).delete(value)
-                hash.deep_fetch(keys).delete(value)
+                keys.inject(hash, :fetch).delete(value)
+                # hash.deep_fetch(keys).delete(value)
             else
                 hash.delete(value)
             end
             return hash
         when "array"
             if exists keys then
-                # keys.inject(hash, :fetch)[hash.size] = value
-                hash.deep_fetch(keys)[hash.size] = value
+                keys.inject(hash, :fetch)[hash.size] = value
+                # hash.deep_fetch(keys)[hash.size] = value
             else
                 hash[hash.size] = value
             end
             return hash
         when "new"
             if exists keys then
-                p hash
-                # keys.inject(hash, :fetch)[key] = {}
-                hash.deep_fetch(keys)[key] = {}
+                *keys, last = keys
+                keys.inject(hash, :fetch)[last] = {key=>value}
+                # hash.deep_fetch([keys])[last] = {key=>value}
             else
-                hash[key] = {}
+                raise "Missing variable error @ KyloDocs::set_array_key"
             end
+            puts hash
             return hash
         when "default"
             if exists keys then
-                # keys.inject(hash, :fetch)[key] = value
-                hash.deep_fetch(keys)[key] = value
+                keys.inject(hash, :fetch)[key] = value
+                # hash.deep_fetch(keys)[key] = value
             else
                 hash[key] = value
             end
@@ -133,27 +134,18 @@ class KyloDocs
         return String.new
     end
 
+    # Give ability to perform multiple modes, add priorities
     def update(path = nil, mode = "default")
         hash = JSON.parse(File.open("#{@dir}.json") { |file| file.read })
-        keys = [@file]
-        if exists path and path != "*" then
-            keyring = path.split("/")
-            keyring.each {|key| keys << key}
-        end
+        keys = [@file] | path.split("/") unless not exists path or path == "*"
 
         if mode == "array" then
             hash = set_array_key(hash, keys, nil, data, mode)
-        elsif mode == "new" then
-            cache = keys
-            *keys, key = keys
-            hash = @data.each {|k,v| set_array_key(hash, keys, key, v, mode)}
-            hash = @data.each {|k,v| set_array_key(hash, cache, k, v, mode)}
         else
-            hash = @data.each {|k,v| set_array_key(hash, keys, k, v, mode)}
+            @data.each {|k,v| hash = set_array_key(hash, keys, k, v, mode)}
         end
-        # Please forgive me
-        hack    = {"#{@file}"=>hash}
-        string  = hack.to_json.encode("UTF-8")
+
+        string  = hash.to_json.encode("UTF-8")
         tmp = Tempfile.new "tmp"
         tmp.write(string)
         FileUtils.mv(tmp.path, "#{@dir}.json")
@@ -171,11 +163,11 @@ class KyloDocs
     end
 end
 
-class Hash
-    def deep_fetch(keys)
-        keys.inject(self) { |obj, key| obj[key] if obj.respond_to? :[] }
-    end
-end
+# class Hash
+#     def deep_fetch(keys)
+#         keys.inject(self) { |obj, key| obj[key] if obj.respond_to? :[] }
+#     end
+# end
 
 
 
