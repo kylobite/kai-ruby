@@ -59,12 +59,17 @@ The current version of KAI has three interpretations:
 
 ```
 Version Goal.Progress.Testing
-or
+
 Version Production.Development.Patch
-or
+
 Version Release.Beta.Alpha
 ```
 
-For this reason, if the newest version has only gone up by 0.0.1, update at your own risk. It would be best to at least wait for it to increment by 0.1.0.
+Notice:
++ If the version increments by 0.0.1: update at your own risk
++ If the version increments by 0.1.0: any new memories might become corrupt
++ If the version increments by 1.0.0: it usually stable and safe to update
++ If the version ends with 'u', \_.\_.\_u: it is very unstable, you have been warned
+
 ***
 &copy; Copyright 2013 Kylobite under [the MIT License](LICENSE).
