@@ -7,31 +7,23 @@ Purpose:    KAI Memories
 
 =end
 
-# require "rubygems"
-# require "bundler/setup"
-# require "sqlite3"
 require_relative "kylodocs"
 require "digest"
-
-# Notes
-# SELECT * FROM table
-# INSERT INTO table (columns) VALUES (values)
-# UPDATE table SET column=newvalue WHERE column=value
-# DELETE FROM table WHERE column=value
-# WHERE column LIKE val
 
 class Memory
     attr_reader :db, :memories, :checksum
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
-    def initialize(memories, memdir)
-        @memories = "#{memdir}/#{memories}.json"
-        kd = KyloDocs.new(memories, memdir)
+    def initialize(dir, memories)
+        @memories = "#{dir}/#{memories}"
+        Dir.mkdir dir unless Dir.exists? dir
+        File.open @memories, File::CREAT unless File.exists? @memories
 
         data = kd.read
 
         if data["statements"] then
             kd.set("statement",{
+                    # Schema
                     # [
                     #     :id     => {},
                     #     :input  => {},
@@ -46,6 +38,7 @@ class Memory
         # Possibly add reaction determination to `categories`?
         if data["categories"] then
             kd.set("statement",{
+                    # Schema
                     # [
                     #     :id     => {},
                     #     :input  => {},
@@ -59,6 +52,7 @@ class Memory
         # SID == session_id
         if data["curiosity"] then
             kd.set("statement",{
+                    # Schema
                     # [
                     #     :id     => {},
                     #     :input  => {},
@@ -69,37 +63,6 @@ class Memory
                 })
         end
 
-        # @db = SQLite3::Database.new(@memories)
-        # @db.execute("CREATE TABLE IF NOT EXISTS statement
-        #              (
-        #                 id INTEGER PRIMARY KEY,
-        #                 input TEXT,
-        #                 output TEXT,
-        #                 scales TEXT,
-        #                 type TEXT,
-        #                 uniqid TEXT
-        #              )"
-        # )
-        # @db.execute("CREATE TABLE IF NOT EXISTS thesaurus
-        #              (
-        #                 id INTEGER PRIMARY KEY,
-        #                 input TEXT,
-        #                 output TEXT,
-        #                 scales TEXT,
-        #                 uniqid TEXT
-        #              )"
-        # )
-        # @db.execute("CREATE TABLE IF NOT EXISTS curiosity
-        #              (
-        #                 id INTEGER PRIMARY KEY,
-        #                 input TEXT,
-        #                 output TEXT,
-        #                 scales TEXT,
-        #                 sid TEXT
-        #              )"
-        # )
-
-        dir = File.expand_path File.dirname __FILE__
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
             File.open checksum, File::CREAT
