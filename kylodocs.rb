@@ -90,17 +90,27 @@ class KyloDocs
             return hash
         when "array"
             if exists keys then
-                keys.inject(hash, :fetch)[hash.size] = value
-                # hash.deep_fetch(keys)[hash.size] = value
+                *keys, last = keys
+                keys.inject(hash, :fetch)[last] = value
+                # hash.deep_fetch(keys)[last] = value
             else
                 hash[hash.size] = value
+            end
+            return hash
+        when "put"
+            if exists keys then
+                *keys, last = keys
+                keys.inject(hash, :fetch)[last] = {key=>value}
+                # hash.deep_fetch([keys])[last] = {key=>value}
+            else
+                raise "Missing variable error @ KyloDocs::set_array_key"
             end
             return hash
         when "new"
             if exists keys then
                 *keys, last = keys
-                keys.inject(hash, :fetch)[last] = {key=>value}
-                # hash.deep_fetch([keys])[last] = {key=>value}
+                keys.inject(hash, :fetch)[last] = {}
+                # hash.deep_fetch([keys])[last] = {}
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
@@ -141,15 +151,37 @@ class KyloDocs
         return String.new
     end
 
-    # Give ability to perform multiple modes, add priorities
-    def update(path = nil, mode = "default")
-        hash = JSON.parse(File.open("#{@dir}.json") { |file| file.read })
-        keys = [@file] | path.split("/") unless not exists path or path == "*"
-
+    def update_mode(mode, hash, keys)
         if mode == "array" then
             hash = set_array_key(hash, keys, nil, data, mode)
         else
             @data.each {|k,v| hash = set_array_key(hash, keys, k, v, mode)}
+        end
+        return hash
+    end
+
+    # I advice only doing this with a `new-array` combo
+    def update(path = nil, mode = "default")
+        hash = JSON.parse(File.open("#{@dir}.json") { |file| file.read })
+        keys = [@file] | path.split("/") unless not exists path or path == "*"
+
+        priority_mode = Array.new
+        # Is there more than one mode given?
+        if mode.kind_of? Array then
+            # If so, determine which mode to run first
+
+            # The order they run in
+            priorities      = ["new","array","put","default","remove"]
+            # Converting order to hash table
+            order           = Hash[priorities.map.with_index.to_a]
+            # Complicated algorithm that sorts `mode` to 'keys' order
+            priority_mode   = mode.map{|k,v| [order[k],k]}.each.sort_by{|k,v| k}.map{|k,v| v}
+            # Process each mode
+            priority_mode.each do |m|
+                update_mode m, hash, keys
+            end
+        else
+            update_mode mode, hash, keys
         end
 
         string  = hash.to_json.encode("UTF-8")
