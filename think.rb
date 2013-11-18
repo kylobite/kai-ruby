@@ -43,7 +43,8 @@ class Think
 
     # Reply to user input; Setting the memory database
     def reply(memory)
-        memories = memory.db.execute "SELECT input, output FROM statement"
+        # memories = memory.db.execute "SELECT input, output FROM statement"
+        memories    = memory.read["statements"]
 
         # Default responses if memory database is empty/nonexistent
         if memories.nil? or memories.empty? then
@@ -61,11 +62,11 @@ class Think
         else
             # Last Resort
 
-            # Consult thesaurus
+            # Consult categories
             # Look for similiar words
             # If all fails: Store string in curiosity and random
 
-            return memories[Random.new.rand(memories.size)][1]
+            return memories[Random.new.rand(memories.size)]["output"]
         end
     end
 
@@ -83,7 +84,7 @@ class Think
         memories.each do |ms|
             used << 0
             # Tokenize memories
-            ms[0].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
+            ms["input"].downcase.scan(/[a-zA-Z0-9'-]+/).each do |m|
                 said.each do |s|
                     if s == m then
                         used[u] += 1
@@ -122,7 +123,12 @@ class Think
         io = process.scan(/\|\s([xyXY]):\s.*/).flatten[0]
 
         # Check empty output for Y
-        output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
+        # output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
+        output = nil
+        Hash[memory.read["statements"].to_a.reverse].each do |m|
+            if m["output"] == '&' then output = m["id"].to_i end
+            break if !output.nil?
+        end
         id = (output.nil?) ? nil : output
 
         if io.downcase == "x" and not id.nil? then
@@ -136,12 +142,17 @@ class Think
         # ID and Unique ID
         if id.nil? then
             # Generate new id
-            get_id      = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
+            # get_id = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
+            get_id = Hash[memory.read["statements"].to_a.reverse][0]["id"]
             id = get_id.nil? ? "0" : get_id + 1
 
             # Generate new IO match
-            unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
-                                             LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
+            # unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
+            #                                  LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
+            unique = Hash[memory.read["statements"].to_a.reverse].each do |m|
+                if m["uniqid"] =~ /#{session_id}.{4}/ then output = m["id"].to_i end
+                break if !output.nil?
+            end
             io_match    = unique.nil? ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
             io_matching = "%x" % io_match
 
@@ -160,11 +171,25 @@ class Think
         # Grab text to remember
         remember = process.scan(/\|\s[xyXY]:\s(.*)/).flatten[0]
         if io.downcase == "x" then
-            memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
-                               VALUES (?,?,?,?,?,?)",[id,remember,'&','[0]',type,uniqid])
+            # memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
+            #                    VALUES (?,?,?,?,?,?)",[id,remember,'&','[0]',type,uniqid])
+            memory.set("id",    id)
+            memory.set("input", remember)
+            memory.set("output",'&')
+            memory.set("scales",'[0]')
+            memory.set("type",  type)
+            memory.set("uniqid",uniqid)
+            memory.update("array","statements")
             return "'#{remember}'"
         elsif io.downcase == "y"
-            memory.db.execute("UPDATE statement SET output=? WHERE id=?",[remember,id])
+            # memory.db.execute("UPDATE statement SET output=? WHERE id=?",[remember,id])
+            memory.set("id",    id)
+            memory.set("input", remember)
+            memory.set("output",'&')
+            memory.set("scales",'[0]')
+            memory.set("type",  type)
+            memory.set("uniqid",uniqid)
+            memory.update
             return "'#{remember}'"
         else
             # This should never happen

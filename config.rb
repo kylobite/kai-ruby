@@ -52,13 +52,7 @@ class Configuration
 
             if password_state then
                 group = @users[user]["group"]
-
-                # Sanity check
-                if not group.empty? then
-                    return group
-                else 
-                    return "guest"
-                end
+                return group unless group.empty?
             else
                 return "guest"
             end

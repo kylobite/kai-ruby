@@ -7,17 +7,8 @@ Purpose:    KAI Memories
 
 =end
 
-require "rubygems"
-require "bundler/setup"
-require "sqlite3"
+require_relative "kylodocs"
 require "digest"
-
-# Notes
-# SELECT * FROM table
-# INSERT INTO table (columns) VALUES (values)
-# UPDATE table SET column=newvalue WHERE column=value
-# DELETE FROM table WHERE column=value
-# WHERE column LIKE val
 
 class Memory
     attr_reader :db, :memories, :checksum
@@ -27,37 +18,50 @@ class Memory
         @memories = "#{dir}/#{memories}"
         Dir.mkdir dir unless Dir.exists? dir
         File.open @memories, File::CREAT unless File.exists? @memories
-        
-        @db = SQLite3::Database.new(@memories)
-        @db.execute("CREATE TABLE IF NOT EXISTS statement
-                     (
-                        id INTEGER PRIMARY KEY,
-                        input TEXT,
-                        output TEXT,
-                        scales TEXT,
-                        type TEXT,
-                        uniqid TEXT
-                     )"
-        )
-        # Possibly add reaction determination to `thesaurus`?
-        @db.execute("CREATE TABLE IF NOT EXISTS thesaurus
-                     (
-                        id INTEGER PRIMARY KEY,
-                        input TEXT,
-                        output TEXT,
-                        scales TEXT,
-                        uniqid TEXT
-                     )"
-        )
+
+        data = kd.read
+
+        if data["statements"] then
+            kd.set("statement",{
+                    # Schema
+                    # [
+                    #     :id     => {},
+                    #     :input  => {},
+                    #     :output => {},
+                    #     :scales => {},
+                    #     :type   => {},
+                    #     :uniqid => {}
+                    # ]
+                })
+        end
+
+        # Possibly add reaction determination to `categories`?
+        if data["categories"] then
+            kd.set("statement",{
+                    # Schema
+                    # [
+                    #     :id     => {},
+                    #     :input  => {},
+                    #     :output => {},
+                    #     :scales => {},
+                    #     :uniqid => {}
+                    # ]
+                })
+        end
+
         # SID == session_id
-        @db.execute("CREATE TABLE IF NOT EXISTS curiosity
-                     (
-                        id INTEGER PRIMARY KEY,
-                        input TEXT,
-                        scales TEXT,
-                        sid TEXT
-                     )"
-        )
+        if data["curiosity"] then
+            kd.set("statement",{
+                    # Schema
+                    # [
+                    #     :id     => {},
+                    #     :input  => {},
+                    #     :output => {},
+                    #     :scales => {},
+                    #     :sid    => {}
+                    # ]
+                })
+        end
 
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
@@ -68,6 +72,6 @@ class Memory
     end
 
     def update_checksum()
-        File.open(@checksum, "w") { |file| file.write(Digest::SHA2.file(@memories).hexdigest) }
+        File.open(@checksum, "w") { |file| file.write(Digest::SHA2.file("#{@memories}").hexdigest) }
     end
 end

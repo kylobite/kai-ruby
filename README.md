@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence<br>Version 0.3.10
+KAI Artificial Intelligence<br>Version 0.4.2u
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -14,25 +14,12 @@ As of now, The KAI Project is an evolving artificial intelligence. The hope for 
 Should these goals be met, KAI will be much more than just artificial intelligence, but displaying characteristics of a living organism.
 
 
-###Dependencies
-
-+ Ruby 1.9+
-+ SQLite3 command line tool
-+ SQLite3 Ruby gem
-
-
 ###How To
 
 Download:
 ```bash
-git clone git@github.com:kylobite/kai.git
+git clone -b unstable git@github.com:kylobite/kai.git
 cd kai
-```
-
-Install dependencies (if you don't already have them):
-
-```bash
-sh install.sh
 ```
 
 Launch KAI:
