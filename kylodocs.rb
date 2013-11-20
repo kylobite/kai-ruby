@@ -79,11 +79,11 @@ class KyloDocs
     # This is the magic behind the `update` function
     def set_array_key(hash, keys, key, value, mode)
         # [walking,down,this].inject(hash, :fetch) == hash[walking][down][this]
+        # The above statement's format is how deep hash fetching works
         case mode
         when "remove"
             if key == "delete" then
                 keys.inject(hash, :fetch).delete(value)
-                # hash.deep_fetch(keys).delete(value)
             else
                 hash.delete(value)
             end
@@ -92,7 +92,6 @@ class KyloDocs
             if exists keys then
                 *keys, last = keys
                 keys.inject(hash, :fetch)[last] = value
-                # hash.deep_fetch(keys)[last] = value
             else
                 hash[hash.size] = value
             end
@@ -101,7 +100,6 @@ class KyloDocs
             if exists keys then
                 *keys, last = keys
                 keys.inject(hash, :fetch)[last] = {key=>value}
-                # hash.deep_fetch([keys])[last] = {key=>value}
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
@@ -110,7 +108,6 @@ class KyloDocs
             if exists keys then
                 *keys, last = keys
                 keys.inject(hash, :fetch)[last] = {}
-                # hash.deep_fetch([keys])[last] = {}
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
@@ -118,7 +115,6 @@ class KyloDocs
         when "default"
             if exists keys then
                 keys.inject(hash, :fetch)[key] = value
-                # hash.deep_fetch(keys)[key] = value
             else
                 hash[key] = value
             end
@@ -170,13 +166,13 @@ class KyloDocs
         if mode.kind_of? Array then
             # If so, determine which mode to run first
 
-            # The order they run in
+            # The order `mode` executes in
             priorities      = ["new","array","put","default","remove"]
-            # Converting order to hash table
+            # Convert `priorities` to numerical hash table
             order           = Hash[priorities.map.with_index.to_a]
-            # Complicated algorithm that sorts `mode` to 'keys' order
+            # Complicated algorithm that sorts `mode` in the `priorities` order
             priority_mode   = mode.map{|k,v| [order[k],k]}.each.sort_by{|k,v| k}.map{|k,v| v}
-            # Process each mode
+            # Execute each mode
             priority_mode.each do |m|
                 update_mode m, hash, keys
             end
@@ -201,12 +197,6 @@ class KyloDocs
         if verify then File.delete("#{@dir}.json") end
     end
 end
-
-# class Hash
-#     def deep_fetch(keys)
-#         keys.inject(self) { |obj, key| obj[key] if obj.respond_to? :[] }
-#     end
-# end
 
 
 
