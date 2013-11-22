@@ -44,7 +44,7 @@ class Think
     # Reply to user input; Setting the memory database
     def reply(memory)
         # memories = memory.db.execute "SELECT input, output FROM statement"
-        memories    = memory.read["statements"]
+        memories    = memory.kd.read["statements"]
 
         # Default responses if memory database is empty/nonexistent
         if memories.nil? or memories.empty? then
@@ -124,11 +124,8 @@ class Think
 
         # Check empty output for Y
         # output = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
-        output = nil
-        Hash[memory.read["statements"].to_a.reverse].each do |m|
-            if m["output"] == '&' then output = m["id"].to_i end
-            break if !output.nil?
-        end
+        output = memory.kd.rsearch(["uniqid",'&'],"id","statements", true)
+        if unique.kind_of? String then unique = unique.to_i end
         id = (output.nil?) ? nil : output
 
         if io.downcase == "x" and not id.nil? then
@@ -143,16 +140,14 @@ class Think
         if id.nil? then
             # Generate new id
             # get_id = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
-            get_id = Hash[memory.read["statements"].to_a.reverse][0]["id"]
+            get_id = Hash[memory.kd.read["statements"].to_a.reverse][0]["id"]
             id = get_id.nil? ? "0" : get_id + 1
 
             # Generate new IO match
             # unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
             #                                  LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
-            unique = Hash[memory.read["statements"].to_a.reverse].each do |m|
-                if m["uniqid"] =~ /#{session_id}.{4}/ then output = m["id"].to_i end
-                break if !output.nil?
-            end
+            unique = memory.kd.rsearch(["uniqid",/#{session_id}.{4}/],"id","statements", true)
+            if unique.kind_of? String then unique = unique.to_i end
             io_match    = unique.nil? ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
             io_matching = "%x" % io_match
 
@@ -173,23 +168,23 @@ class Think
         if io.downcase == "x" then
             # memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
             #                    VALUES (?,?,?,?,?,?)",[id,remember,'&','[0]',type,uniqid])
-            memory.set("id",    id)
-            memory.set("input", remember)
-            memory.set("output",'&')
-            memory.set("scales",'[0]')
-            memory.set("type",  type)
-            memory.set("uniqid",uniqid)
-            memory.update("array","statements")
+            memory.kd.set("id",    id)
+            memory.kd.set("input", remember)
+            memory.kd.set("output",'&')
+            memory.kd.set("scales",'[0]')
+            memory.kd.set("type",  type)
+            memory.kd.set("uniqid",uniqid)
+            memory.kd.update("array","statements")
             return "'#{remember}'"
         elsif io.downcase == "y"
             # memory.db.execute("UPDATE statement SET output=? WHERE id=?",[remember,id])
-            memory.set("id",    id)
-            memory.set("input", remember)
-            memory.set("output",'&')
-            memory.set("scales",'[0]')
-            memory.set("type",  type)
-            memory.set("uniqid",uniqid)
-            memory.update
+            memory.kd.set("id",    id)
+            memory.kd.set("input", remember)
+            memory.kd.set("output",'&')
+            memory.kd.set("scales",'[0]')
+            memory.kd.set("type",  type)
+            memory.kd.set("uniqid",uniqid)
+            memory.kd.update
             return "'#{remember}'"
         else
             # This should never happen

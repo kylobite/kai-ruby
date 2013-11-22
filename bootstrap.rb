@@ -20,7 +20,7 @@ class Bootstrap
     def initialize(memories)
         # Grab the memory database
         dir             = File.expand_path File.dirname __FILE__
-        @memory         = Memory.new dir, memories
+        @memory         = Memory.new "#{dir}/memories", memories
 
         # Grab the configuration settings
         @config = Configuration.new

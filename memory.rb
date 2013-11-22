@@ -11,7 +11,7 @@ require_relative "kylodocs"
 require "digest"
 
 class Memory
-    attr_reader :db, :memories, :checksum
+    attr_reader :kd, :memories, :checksum
 
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(dir, memories)
@@ -19,10 +19,11 @@ class Memory
         Dir.mkdir dir unless Dir.exists? dir
         File.open @memories, File::CREAT unless File.exists? @memories
 
-        data = kd.read
+        @kd = KyloDocs.new "#{memories}", dir
+        data = @kd.read
 
-        if data["statements"] then
-            kd.set("statement",{
+        if not data["statements"] then
+            @kd.set("statement",{
                     # Schema
                     # [
                     #     :id     => {},
@@ -36,8 +37,8 @@ class Memory
         end
 
         # Possibly add reaction determination to `categories`?
-        if data["categories"] then
-            kd.set("statement",{
+        if not data["categories"] then
+            @kd.set("categories",{
                     # Schema
                     # [
                     #     :id     => {},
@@ -50,8 +51,8 @@ class Memory
         end
 
         # SID == session_id
-        if data["curiosity"] then
-            kd.set("statement",{
+        if not data["curiosity"] then
+            @kd.set("curiosity",{
                     # Schema
                     # [
                     #     :id     => {},
@@ -62,6 +63,8 @@ class Memory
                     # ]
                 })
         end
+
+        @kd.update "*", ["new","array"]
 
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
