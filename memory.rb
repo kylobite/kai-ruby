@@ -16,8 +16,8 @@ class Memory
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(dir, memories)
         @memories = "#{dir}/#{memories}"
-        Dir.mkdir dir unless Dir.exists? dir
-        File.open @memories, File::CREAT unless File.exists? @memories
+        # Dir.mkdir dir unless Dir.exists? dir
+        # File.open @memories, File::CREAT unless File.exists? @memories
 
         @kd = KyloDocs.new "#{memories}", dir
         data = @kd.read
@@ -75,6 +75,6 @@ class Memory
     end
 
     def update_checksum()
-        File.open(@checksum, "w") { |file| file.write(Digest::SHA2.file("#{@memories}").hexdigest) }
+        File.open(@checksum, "w") { |file| file.write(Digest::SHA2.file("#{@memories}.json").hexdigest) }
     end
 end

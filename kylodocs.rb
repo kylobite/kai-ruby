@@ -30,7 +30,7 @@ class KyloDocs
 
             @path = path
             @path ||= locate base
-            @dir  = "#{@path}/#{file}"
+            @dir  = "#{@path}/#{file}.json"
 
             if not File.exists? "#{@dir}" then create end
         end
@@ -162,36 +162,51 @@ class KyloDocs
         get = nil
         get ||= keys.inject(hash, :fetch)[look]
 
-        get.each do |h|
-            if vague then
-                if h[look] =~ expect then output = h[grab] end
-            else
-                if h[look] == expect then output = h[grab] end
+        if get.kind_of? Array then
+            get.each do |h|
+                if vague then
+                    if h[look] =~ expect then output = h[grab] end
+                else
+                    if h[look] == expect then output = h[grab] end
+                end
+                break if !output.nil?
             end
-            break if !output.nil?
+        else
+            if vague then
+                if get[look] =~ expect then output = get[grab] end
+            else
+                if get[look] == expect then output = get[grab] end
+            end
         end unless not exists get
         return (output.nil?) ? nil : output
     end
 
     # Reverse search; same as DESC
     def rsearch(terms, grab, path = nil, vague = false)
-        hash = read()
+        hash = Hash[read().to_a.reverse]
         keys = [@file] | path.split("/")
         output = nil
         look, expect = terms[0], terms[1]
 
-        # Please do not let this happen
-        check = exists Hash[keys.inject(hash, :fetch)[look].to_a.reverse]
-        get = check ? Hash[keys.inject(hash, :fetch)[look].to_a.reverse] : nil
+        get = nil
+        get ||= keys.inject(hash, :fetch)[look]
 
         # Reverse aspect
-        get.each do |h|
-            if vague then
-                if h[look] =~ expect then output = h[grab] end
-            else
-                if h[look] == expect then output = h[grab] end
+        if get.kind_of? Array then
+            get.each do |h|
+                if vague then
+                    if h[look] =~ expect then output = h[grab] end
+                else
+                    if h[look] == expect then output = h[grab] end
+                end
+                break if !output.nil?
             end
-            break if !output.nil?
+        else
+            if vague then
+                if get[look] =~ expect then output = get[grab] end
+            else
+                if get[look] == expect then output = get[grab] end
+            end
         end unless not exists get
         return (output.nil?) ? nil : output
     end
