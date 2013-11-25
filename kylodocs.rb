@@ -92,15 +92,42 @@ class KyloDocs
         when "array"
             if exists keys then
                 *keys, last = keys
-                keys.inject(hash, :fetch)[last] = value
+                value.each do |v|
+                    keys.inject(hash, :fetch)[last].push(v)
+                end
             else
                 hash[hash.size] = value
             end
             return hash
-        when "put"
+        when "put"              # Alias of `default`
+            if exists keys then
+                keys.inject(hash, :fetch)[key] = value
+            else
+                hash[key] = value
+            end
+            return hash
+        when "put|array"
             if exists keys then
                 *keys, last = keys
-                keys.inject(hash, :fetch)[last] = {key=>value}
+                keys.inject(hash, :fetch)[last.to_i] = value
+            else
+                raise "Missing variable error @ KyloDocs::set_array_key"
+            end
+            return hash
+        when "put|array|last"
+            if exists keys then
+                *keys, last = keys
+                put = keys.inject(hash, :fetch)[last].size - 1
+                keys.inject(hash, :fetch)[last][put.to_i] = value
+            else
+                raise "Missing variable error @ KyloDocs::set_array_key"
+            end
+            return hash
+        when "put|array|last|key"
+            if exists keys then
+                *keys, last = keys
+                put = keys.inject(hash, :fetch)[last].size - 1
+                keys.inject(hash, :fetch)[last][put.to_i][key] = value
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
@@ -109,6 +136,17 @@ class KyloDocs
             if exists keys then
                 *keys, last = keys
                 keys.inject(hash, :fetch)[last] = {}
+            else
+                raise "Missing variable error @ KyloDocs::set_array_key"
+            end
+            return hash
+        when "new|array"
+            if exists keys then
+                *keys, last  = keys
+                keys.inject(hash, :fetch)[last] = []
+                value.each do |v|
+                    keys.inject(hash, :fetch)[last].push(v)
+                end
             else
                 raise "Missing variable error @ KyloDocs::set_array_key"
             end
@@ -137,13 +175,13 @@ class KyloDocs
         File.open("#{@dir}", File::RDWR|File::CREAT, 0644) { |file| file.write({"#{@file}"=>{}}.to_json) }
     end
 
-    def read(string = false)
+    def read(verbose = false, string = false)
         contents = File.open("#{@dir}") { |file| file.read }
 
         if string then
-            return serialize contents
+            return verbose ? (serialize contents)   : (serialize contents)[@file]
         else
-            return unserialize contents
+            return verbose ? (unserialize contents) : (unserialize contents)[@file]
         end
         return String.new
     end
@@ -154,13 +192,19 @@ class KyloDocs
     ## path  = where to look for index
     ## vague = check exact or close to
     def search(terms, grab, path = nil, vague = false)
-        hash = read()
+        hash = read(true)
         keys = [@file] | path.split("/")
         output = nil
         look, expect = terms[0], terms[1]
-
         get = nil
-        get ||= keys.inject(hash, :fetch)[look]
+
+        # Is an array being searched?
+        if array then
+            *keys, last = keys
+            get ||= keys.inject(hash, :fetch)[last][look]
+        else
+            get ||= keys.inject(hash, :fetch)[last][look]
+        end
 
         if get.kind_of? Array then
             get.each do |h|
@@ -182,14 +226,28 @@ class KyloDocs
     end
 
     # Reverse search; same as DESC
-    def rsearch(terms, grab, path = nil, vague = false)
-        hash = Hash[read().to_a.reverse]
+    def rsearch(terms, grab, path = nil, vague = false, array = false)
+        hash = read(true)
         keys = [@file] | path.split("/")
         output = nil
         look, expect = terms[0], terms[1]
-
         get = nil
-        get ||= keys.inject(hash, :fetch)[look]
+
+        # Is an array being searched?
+        if array then
+            *keys, last = keys
+            get ||= keys.inject(hash, :fetch)[last.to_i]
+        else
+            get ||= keys.inject(hash, :fetch)
+        end
+
+        # Reverse!
+        if exists get then
+            if get.kind_of? Hash
+            then get = Hash[get.to_a.reverse][look]
+            else get = get.reverse[look]
+            end
+        end
 
         # Reverse aspect
         if get.kind_of? Array then
@@ -211,14 +269,14 @@ class KyloDocs
         return (output.nil?) ? nil : output
     end
 
-    def update_mode(mode, hash, keys)
-        if mode == "array" then
-            hash = set_array_key(hash, keys, nil, data, mode)
-        else
-            @data.each {|k,v| hash = set_array_key(hash, keys, k, v, mode)}
-        end
-        return hash
-    end
+    # def update_mode(mode, hash, keys)
+    #     if mode == "array" then
+    #         hash = set_array_key(hash, keys, nil, data, mode)
+    #     else
+    #         @data.each {|k,v| hash = set_array_key(hash, keys, k, v, mode)}
+    #     end
+    #     return hash
+    # end
 
     # I advice only doing this with a `new-array` combo
     def update(path = nil, mode = "default")
@@ -226,23 +284,30 @@ class KyloDocs
         keys = [@file]
         keys = keys | path.split("/") unless not exists path or path == "*"
 
-        priority_mode = Array.new
-        # Is there more than one mode given?
-        if mode.kind_of? Array then
-            # If so, determine which mode to run first
+        # priority_mode = Array.new
+        # # Is there more than one mode given?
+        # if mode.kind_of? Array then
+        #     # If so, determine which mode to run first
 
-            # The order `mode` executes in
-            priorities      = ["new","array","put","default","remove"]
-            # Convert `priorities` to numerical hash table
-            order           = Hash[priorities.map.with_index.to_a]
-            # Complicated algorithm that sorts `mode` in the `priorities` order
-            priority_mode   = mode.map{|k,v| [order[k],k]}.each.sort_by{|k,v| k}.map{|k,v| v}
-            # Execute each mode
-            priority_mode.each do |m|
-                update_mode m, hash, keys
-            end
+        #     # The order `mode` executes in
+        #     priorities      = ["new","array","put","default","remove"]
+        #     # Convert `priorities` to numerical hash table
+        #     order           = Hash[priorities.map.with_index.to_a]
+        #     # Complicated algorithm that sorts `mode` in the `priorities` order
+        #     priority_mode   = mode.map{|k,v| [order[k],k]}.each.sort_by{|k,v| k}.map{|k,v| v}
+        #     # Execute each mode
+        #     priority_mode.each do |m|
+        #         update_mode m, hash, keys
+        #     end
+        # else
+        #     update_mode mode, hash, keys
+        # end
+
+        if mode == "array" || mode == "new|array" then
+            send = data.map{|k,v| v}
+            hash = set_array_key(hash, keys, nil, send, mode)
         else
-            update_mode mode, hash, keys
+            @data.each {|k,v| hash = set_array_key(hash, keys, k, v, mode)}
         end
 
         string  = hash.to_json.encode("UTF-8")

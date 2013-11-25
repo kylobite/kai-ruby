@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence - Ruby Implementation<br>Version 0.4.4u
+KAI Artificial Intelligence - Ruby Implementation<br>Version 0.4.5u
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 

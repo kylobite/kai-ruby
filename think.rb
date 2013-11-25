@@ -44,7 +44,8 @@ class Think
     # Reply to user input; Setting the memory database
     def reply(memory)
         # memories = memory.db.execute "SELECT input, output FROM statement"
-        memories    = memory.kd.read["statement"]
+        kd          = memory.kd
+        memories    = kd.read["statement"]
 
         # Default responses if memory database is empty/nonexistent
         if memories.nil? or memories.empty? then
@@ -122,9 +123,12 @@ class Think
         # Determine if input or output
         io = process.scan(/\|\s([xyXY]):\s.*/).flatten[0]
 
+        # Alias to KyloDocs
+        kd = memory.kd
+
         # Check empty output for Y
         # unique = memory.db.execute("SELECT id FROM statement WHERE output='&' ORDER BY id DESC LIMIT 1")[0]
-        unique = memory.kd.rsearch(["output",'&'],"id","statement", true)
+        unique = kd.rsearch(["output",'&'],"id","statement", true, true) unless not kd.exists kd.read["statement"]
         if unique.kind_of? String then unique = unique.to_i end
         id = (unique.nil?) ? nil : unique
 
@@ -140,13 +144,13 @@ class Think
         if id.nil? then
             # Generate new id
             # get_id = memory.db.execute("SELECT id FROM statement ORDER BY id DESC LIMIT 1").flatten[0]
-            get_id = Hash[memory.kd.read["statement"].to_a.reverse]["id"]
-            id = get_id.nil? ? "0" : get_id + 1
+            get_id = (kd.read["statement"].reverse)[0]["id"] unless not kd.exists kd.read["statement"]
+            id = get_id.nil? ? "0" : (get_id.to_i + 1).to_s
 
             # Generate new IO match
             # unique      = memory.db.execute("SELECT uniqid FROM statement WHERE uniqid 
             #                                  LIKE ? ORDER BY id DESC LIMIT 1",["#{session_id}____"]).flatten[0]
-            unique = memory.kd.rsearch(["uniqid",/#{session_id}.{4}/],"id","statement", true)
+            unique = kd.rsearch(["uniqid",/#{session_id}.{4}/],"id","statement", true, true) unless not kd.exists kd.read["statement"]
             if unique.kind_of? String then unique = unique.to_i end
             io_match    = unique.nil? ? "0" : (unique[(unique.size - 4),(unique.size)].to_s.to_i(16).to_s(10).to_i + 1)
             io_matching = "%x" % io_match
@@ -168,18 +172,26 @@ class Think
         if io.downcase == "x" then
             # memory.db.execute("INSERT INTO statement (id,input,output,scales,type,uniqid) 
             #                    VALUES (?,?,?,?,?,?)",[id,remember,'&','[0]',type,uniqid])
-            memory.kd.set("id",    id)
-            memory.kd.set("input", remember)
-            memory.kd.set("output",'&')
-            memory.kd.set("scales",'[0]')
-            memory.kd.set("type",  type)
-            memory.kd.set("uniqid",uniqid)
-            memory.kd.update("statement", "array")
+            # kd.set("id",      id)
+            # kd.set("input",   remember)
+            # kd.set("output",  '&')
+            # kd.set("scales",  '[0]')
+            # kd.set("type",    type)
+            # kd.set("uniqid",  uniqid)
+            kd.set 0, {
+                "id"       => id,
+                "input"    => remember,
+                "output"   => '&',
+                "scales"   => '[0]',
+                "type"     => type,
+                "uniqid"   => uniqid
+            }
+            kd.update("statement", "array")
             return "'#{remember}'"
         elsif io.downcase == "y"
             # memory.db.execute("UPDATE statement SET output=? WHERE id=?",[remember,id])
-            memory.kd.set("output", remember)
-            memory.kd.update("statement/#{id}")
+            kd.set("output", remember)
+            kd.update("statement", "put|array|last|key")
             return "'#{remember}'"
         else
             # This should never happen

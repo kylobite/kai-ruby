@@ -16,14 +16,14 @@ class Memory
     # Create memory database; Set checksum of memories; Hardcode existing tables
     def initialize(dir, memories)
         @memories = "#{dir}/#{memories}"
-        # Dir.mkdir dir unless Dir.exists? dir
+        Dir.mkdir dir unless Dir.exists? dir
         # File.open @memories, File::CREAT unless File.exists? @memories
 
         @kd = KyloDocs.new "#{memories}", dir
         data = @kd.read
 
-        if not data["statements"] then
-            @kd.set("statement",{
+        if not data["statement"] then
+            @kd.set("statement",[
                     # Schema
                     # [
                     #     :id     => {},
@@ -33,12 +33,12 @@ class Memory
                     #     :type   => {},
                     #     :uniqid => {}
                     # ]
-                })
+                ])
         end
 
         # Possibly add reaction determination to `categories`?
         if not data["categories"] then
-            @kd.set("categories",{
+            @kd.set("categories",[
                     # Schema
                     # [
                     #     :id     => {},
@@ -47,12 +47,12 @@ class Memory
                     #     :scales => {},
                     #     :uniqid => {}
                     # ]
-                })
+                ])
         end
 
         # SID == session_id
         if not data["curiosity"] then
-            @kd.set("curiosity",{
+            @kd.set("curiosity",[
                     # Schema
                     # [
                     #     :id     => {},
@@ -61,10 +61,10 @@ class Memory
                     #     :scales => {},
                     #     :sid    => {}
                     # ]
-                })
+                ])
         end
 
-        @kd.update "*", ["new","array"]
+        @kd.update
 
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
