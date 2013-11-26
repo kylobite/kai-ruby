@@ -1,6 +1,6 @@
 ![KAI Egg](logo.png)
 -----
-KAI Artificial Intelligence - Ruby Implementation<br>Version 0.4.5u
+KAI Artificial Intelligence - Ruby Implementation<br>Version 0.5.0
 
 As of now, The KAI Project is an evolving artificial intelligence. The hope for KAI is for it to reach six goals during development:
 
@@ -34,8 +34,10 @@ If all goes well, you show now see something like this:
 
  KAI v0.0.0
 ------------------
-> 
+Username: 
 ```
+
+In this case, you case safely press 'Enter' twice to skip the logging process and just talk to KAI
 
 {{ TO BE CONTINUED }}
 

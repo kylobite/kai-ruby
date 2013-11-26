@@ -58,7 +58,7 @@ class Think
 
         # Do if KAI thought of something
         if content > 0 then
-            return memories[use.index(use.max)][1]
+            return memories[use.index(use.max)]["output"]
         # Do if KAI is clueless at the moment
         else
             # Last Resort
