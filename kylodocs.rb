@@ -50,7 +50,7 @@ class KyloDocs
         @data[param] = val
     end
 
-    # Look for the `memories` folder
+    # Look for the `kylodocs` folder
     # This is so YOU can be lazy
     def locate(start)
         contents = Dir.entries start
@@ -58,7 +58,7 @@ class KyloDocs
 
         # Let us hope we find it quickly
         contents.each do |c|
-            if c == "memories"
+            if c == "kylodocs"
                 # Return is our safety line
                 return "#{@base}/#{c}"
             end
@@ -73,8 +73,8 @@ class KyloDocs
         end
 
         # Please, never be this lazy
-        FileUtils.mkpath("memories") unless Dir.exist? "memories"
-        return "#{@base}/#{@memories}"
+        FileUtils.mkpath("kylodocs") unless Dir.exist? "kylodocs"
+        return "#{@base}/#{@kylodocs}"
     end
 
     # This is the magic behind the `update` function
