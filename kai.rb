@@ -24,7 +24,7 @@ if !command.nil? then
 end
 
 kai = Bootstrap.new "brain"
-kai.header "0.5.0"
+kai.header "0.5.1"
 
 # Can users log in?
 # What rights will they get?
