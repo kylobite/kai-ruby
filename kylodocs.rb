@@ -4,7 +4,6 @@
 
 Developer:  Kylobite
 Purpose:    Ruby port of KyloDocs
-Version:    1.1.1
 KyloDocs:   https://github.com/kylobite/kylodocs
 
 =end
@@ -28,7 +27,7 @@ class KyloDocs
             @data = Hash.new
             @base = File.expand_path File.dirname __FILE__
 
-            @path = path
+            @path = path unless path == @base
             @path ||= locate base
             @dir  = "#{@path}/#{file}.json"
 
@@ -50,14 +49,14 @@ class KyloDocs
         @data[param] = val
     end
 
-    # Look for the `kylodocs` folder
+    # Look for the `memories` folder
     # This is so YOU can be lazy
     def locate(start)
-        contents = Dir.entries start
-        2.times { contents.shift }
+        content = Dir.entries start
+        2.times { content.shift }
 
         # Let us hope we find it quickly
-        contents.each do |c|
+        content.each do |c|
             if c == "kylodocs"
                 # Return is our safety line
                 return "#{@base}/#{c}"
@@ -65,16 +64,16 @@ class KyloDocs
         end
 
         # Time to look deeper
-        contents.each do |c|
+        content.each do |c|
             if File.directory? c then
                 # Recursion!!!
-                locate c
+                locate "#{start}/#{c}"
             end
         end
 
         # Please, never be this lazy
         FileUtils.mkpath("kylodocs") unless Dir.exist? "kylodocs"
-        return "#{@base}/#{@kylodocs}"
+        return "#{@base}/kylodocs"
     end
 
     # This is the magic behind the `update` function

@@ -69,9 +69,8 @@ class Memory
         @checksum = "#{dir}/checksum"
         if not File.exist? checksum then
             File.open checksum, File::CREAT
-        else
-            update_checksum
         end
+        update_checksum
     end
 
     def update_checksum()

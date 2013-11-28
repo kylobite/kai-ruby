@@ -32,7 +32,7 @@ class Bootstrap
         @prompt         = "> "
 
         # Grab the checksum of the memory database
-        @checksum = File.open("#{dir}/memories/checksum") {|file| file.read}
+        # @checksum = File.open("#{dir}/memories/checksum") {|file| file.read}
     end
 
     def get_db()
