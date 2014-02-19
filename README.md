@@ -18,7 +18,7 @@ Should these goals be met, KAI will be much more than just artificial intelligen
 
 Download:
 ```bash
-$ git clone -b unstable git@github.com:kylobite/kai-ruby.git
+$ git clone git@github.com:kylobite/kai-ruby.git
 $ cd kai
 ```
 
